@@ -1,0 +1,75 @@
+############################################
+# Environment & Secrets
+############################################
+
+.env
+.env.*
+!.env.example
+
+secrets/
+*.token
+*.key
+*.pem
+
+############################################
+# Docker / Runtime Artifacts
+############################################
+
+# Docker volumes (if bind-mounted locally)
+data/
+volumes/
+influxdb-data/
+grafana-data/
+
+# Docker override files
+docker-compose.override.yml
+
+############################################
+# InfluxDB
+############################################
+
+# Local Influx configs / state
+influxdb/config/*
+!influxdb/config/.keep
+
+# CLI configs
+.influxdbv2/
+
+############################################
+# Grafana
+############################################
+
+# Local Grafana state
+grafana/data/
+grafana/plugins/
+
+# Auto-generated dashboards (export explicitly instead)
+grafana/dashboards/*.json
+!grafana/dashboards/*.template.json
+
+############################################
+# Logs
+############################################
+
+*.log
+logs/
+
+############################################
+# OS / Editor Noise
+############################################
+
+.DS_Store
+Thumbs.db
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+############################################
+# Backups
+############################################
+
+*.bak
+*.backup
+*.old
