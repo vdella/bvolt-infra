@@ -1,0 +1,15 @@
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB
+    type: influxdb
+    access: proxy
+    orgId: 1
+    url: http://localhost:8086
+    jsonData:
+      version: Flux
+      organization: bvolt
+      defaultBucket: bvolt_dev
+    secureJsonData:
+      token: ${INFLUX_GRAFANA_TOKEN}
+    isDefault: true
