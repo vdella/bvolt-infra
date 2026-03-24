@@ -1,19 +1,22 @@
-version: "3.8"
-
 services:
-  influxdb:
-    image: influxdb:2.7
-    container_name: bvolt-influxdb
+  bvolt-infra:
+    build:
+      context: .
+    container_name: bvolt-infra
     restart: unless-stopped
     ports:
-      - "8086:8086"
+      - "8010:8010"
     env_file:
       - .env
-    volumes:
-      - influxdb-data:/var/lib/influxdb2
-      - ./influxdb/init:/docker-entrypoint-initdb.d
+    environment:
+      BVOLT_CORE_BASE_URL: http://bvolt-core:8000
+      BVOLT_CORE_API_KEY: ${BVOLT_CORE_API_KEY:-}
+      BVOLT_CORE_SOURCE_LABEL: ${BVOLT_CORE_SOURCE_LABEL:-Internal bvolt-core service}
+      BVOLT_ALLOWED_ORIGINS: ${BVOLT_ALLOWED_ORIGINS:-*}
+      BVOLT_APP_HOST: 0.0.0.0
+      BVOLT_APP_PORT: 8010
     networks:
-      - bvolt-net
+      - bvolt-shared
 
   grafana:
     image: grafana/grafana:latest
@@ -25,15 +28,13 @@ services:
       - grafana-data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/var/lib/grafana/dashboards
-    depends_on:
-      - influxdb
     networks:
-      - bvolt-net
+      - bvolt-shared
 
 volumes:
-  influxdb-data:
   grafana-data:
 
 networks:
-  bvolt-net:
-    driver: bridge
+  bvolt-shared:
+    external: true
+    name: bvolt-shared

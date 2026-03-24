@@ -3,6 +3,7 @@ from pathlib import Path
 
 import uvicorn
 from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
@@ -15,6 +16,13 @@ from bvolt_infra.core_client import CoreApiClient
 BASE_DIR = Path(__file__).resolve().parent
 
 app = FastAPI(title="bvolt-infra", version="0.1.0")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=config.allowed_origins,
+    allow_credentials=False,
+    allow_methods=["GET"],
+    allow_headers=["*"],
+)
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 core_client = CoreApiClient()
@@ -26,7 +34,7 @@ async def dashboard(request: Request):
         request=request,
         name="index.html",
         context={
-            "core_base_url": config.core_base_url,
+            "core_source_label": config.core_source_label,
             "refresh_seconds": int(config.dashboard_refresh_seconds),
         },
     )
@@ -74,7 +82,12 @@ async def timeseries(
 
 
 def main() -> None:
-    uvicorn.run("bvolt_infra.main:app", host="0.0.0.0", port=8010, reload=False)
+    uvicorn.run(
+        "bvolt_infra.main:app",
+        host=config.app_host,
+        port=config.app_port,
+        reload=False,
+    )
 
 
 if __name__ == "__main__":
