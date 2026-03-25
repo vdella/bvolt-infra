@@ -12,6 +12,11 @@ const metrics = [
   ["battery_temperature", "Battery Temperature", "C"]
 ];
 const telemetryPanelStateKey = "bvolt-infra.telemetry-panel.open";
+const summaryMetrics = [
+  ["Total Load", "total_load_power", "W"],
+  ["Avg Battery SOC", "battery_soc", "%"],
+  ["Total PV", "pv_power", "W"]
+];
 
 function getMetricFamily(key) {
   if (key.startsWith("battery_")) {
@@ -58,6 +63,93 @@ function formatValue(value, unit) {
   return `${Number(value).toFixed(2)} ${unit}`;
 }
 
+function getNumericValue(state, key) {
+  if (!state || state[key] === null || state[key] === undefined) {
+    return null;
+  }
+
+  const value = Number(state[key]);
+  return Number.isFinite(value) ? value : null;
+}
+
+function buildSummary(payload) {
+  const states = Object.values(payload).filter(Boolean);
+  if (!states.length) {
+    return "";
+  }
+
+  const aggregateValues = Object.fromEntries(summaryMetrics.map(([label, key, unit]) => {
+    const values = states
+      .map((state) => getNumericValue(state, key))
+      .filter((value) => value !== null);
+
+    if (!values.length) {
+      return [key, { label, unit, value: null }];
+    }
+
+    const value = key === "battery_soc"
+      ? values.reduce((sum, value) => sum + value, 0) / values.length
+      : values.reduce((sum, value) => sum + value, 0);
+
+    return [key, { label, unit, value }];
+  }));
+
+  const totalGridValues = states
+    .map((state) => getNumericValue(state, "total_grid_power"))
+    .filter((value) => value !== null);
+  const batteryPowerValues = states
+    .map((state) => getNumericValue(state, "battery_power"))
+    .filter((value) => value !== null);
+
+  const totalGridPower = totalGridValues.length
+    ? totalGridValues.reduce((sum, value) => sum + value, 0)
+    : null;
+  const totalBatteryPower = batteryPowerValues.length
+    ? batteryPowerValues.reduce((sum, value) => sum + value, 0)
+    : null;
+
+  const gridDirection = totalGridPower === null
+    ? { label: "Grid state unavailable", family: "default", value: "-" }
+    : totalGridPower < -50
+      ? { label: "Grid importing", family: "grid", value: formatValue(Math.abs(totalGridPower), "W") }
+      : totalGridPower > 50
+        ? { label: "Grid exporting", family: "pv", value: formatValue(totalGridPower, "W") }
+        : { label: "Grid balanced", family: "default", value: formatValue(totalGridPower, "W") };
+
+  const batteryDirection = totalBatteryPower === null
+    ? { label: "Battery state unavailable", family: "default", value: "-" }
+    : totalBatteryPower > 50
+      ? { label: "Battery charging", family: "battery", value: formatValue(totalBatteryPower, "W") }
+      : totalBatteryPower < -50
+        ? { label: "Battery discharging", family: "load", value: formatValue(Math.abs(totalBatteryPower), "W") }
+        : { label: "Battery steady", family: "default", value: formatValue(totalBatteryPower, "W") };
+
+  const metricCards = Object.entries(aggregateValues).map(([key, data]) => `
+    <article class="summary-card summary-card--${getMetricFamily(key)}">
+      <p>${data.label}</p>
+      <strong>${formatValue(data.value, data.unit)}</strong>
+    </article>
+  `).join("");
+
+  return `
+    <article class="summary-card summary-card--health">
+      <div class="summary-card__header">
+        <p>System flow</p>
+        <strong>${gridDirection.label}</strong>
+      </div>
+      <div class="summary-badges">
+        <span class="summary-badge summary-badge--${gridDirection.family}">
+          ${gridDirection.label}: ${gridDirection.value}
+        </span>
+        <span class="summary-badge summary-badge--${batteryDirection.family}">
+          ${batteryDirection.label}: ${batteryDirection.value}
+        </span>
+      </div>
+    </article>
+    ${metricCards}
+  `;
+}
+
 function renderCard(label, state) {
   if (!state) {
     return `
@@ -85,6 +177,7 @@ function renderCard(label, state) {
 
 async function refresh() {
   const status = document.getElementById("status");
+  const summary = document.getElementById("summary");
   const cards = document.getElementById("cards");
 
   try {
@@ -94,12 +187,15 @@ async function refresh() {
     }
 
     const payload = await response.json();
+    summary.innerHTML = buildSummary(payload);
     cards.innerHTML = Object.entries(payload)
+      .sort(([left], [right]) => left.localeCompare(right, undefined, { numeric: true }))
       .map(([label, state]) => renderCard(label, state))
       .join("");
     status.textContent = `Last refresh: ${new Date().toLocaleTimeString()}`;
   } catch (error) {
     status.textContent = "Refresh failed. Check bvolt-core connectivity.";
+    summary.innerHTML = "";
   }
 }
 
