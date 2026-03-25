@@ -97,15 +97,8 @@ function buildSummary(payload) {
   const totalGridValues = states
     .map((state) => getNumericValue(state, "total_grid_power"))
     .filter((value) => value !== null);
-  const batteryPowerValues = states
-    .map((state) => getNumericValue(state, "battery_power"))
-    .filter((value) => value !== null);
-
   const totalGridPower = totalGridValues.length
     ? totalGridValues.reduce((sum, value) => sum + value, 0)
-    : null;
-  const totalBatteryPower = batteryPowerValues.length
-    ? batteryPowerValues.reduce((sum, value) => sum + value, 0)
     : null;
 
   const gridDirection = totalGridPower === null
@@ -115,14 +108,6 @@ function buildSummary(payload) {
       : totalGridPower > 50
         ? { label: "Grid exporting", family: "pv", value: formatValue(totalGridPower, "W") }
         : { label: "Grid balanced", family: "default", value: formatValue(totalGridPower, "W") };
-
-  const batteryDirection = totalBatteryPower === null
-    ? { label: "Battery state unavailable", family: "default", value: "-" }
-    : totalBatteryPower > 50
-      ? { label: "Battery charging", family: "battery", value: formatValue(totalBatteryPower, "W") }
-      : totalBatteryPower < -50
-        ? { label: "Battery discharging", family: "load", value: formatValue(Math.abs(totalBatteryPower), "W") }
-        : { label: "Battery steady", family: "default", value: formatValue(totalBatteryPower, "W") };
 
   const metricCards = Object.entries(aggregateValues).map(([key, data]) => `
     <article class="summary-card summary-card--${getMetricFamily(key)}">
@@ -140,9 +125,6 @@ function buildSummary(payload) {
       <div class="summary-badges">
         <span class="summary-badge summary-badge--${gridDirection.family}">
           ${gridDirection.label}: ${gridDirection.value}
-        </span>
-        <span class="summary-badge summary-badge--${batteryDirection.family}">
-          ${batteryDirection.label}: ${batteryDirection.value}
         </span>
       </div>
     </article>

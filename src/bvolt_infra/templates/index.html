@@ -8,23 +8,6 @@
   </head>
   <body>
     <main>
-      <section class="page-header">
-        <div class="hero">
-          <p class="eyebrow hero__eyebrow">Operations console</p>
-          <h1>bvolt-infra</h1>
-          <p>Read-only dashboard backed by bvolt-core API.</p>
-        </div>
-        <dl class="hero-meta">
-          <div>
-            <dt>Source</dt>
-            <dd>{{ core_source_label }}</dd>
-          </div>
-          <div>
-            <dt>Refresh</dt>
-            <dd>{{ refresh_seconds }}s</dd>
-          </div>
-        </dl>
-      </section>
       <section class="dashboard-layout">
         {% if grafana_embed_url %}
         <section class="grafana-panel">

@@ -33,7 +33,7 @@ body {
 
 main {
   width: calc(100% - 24px);
-  margin: 12px auto;
+  margin: 10px auto;
   display: grid;
   gap: 16px;
   grid-template-columns: minmax(0, 1fr);
@@ -125,17 +125,17 @@ main {
 
 .dashboard-layout {
   grid-column: 1 / -1;
-  margin-top: 16px;
   display: grid;
   gap: 16px;
   grid-template-columns: minmax(0, 2.6fr) minmax(240px, 0.62fr) minmax(240px, 0.62fr);
-  align-items: start;
+  align-items: stretch;
 }
 
 .grafana-panel {
   grid-column: 1;
   min-width: 0;
   width: 100%;
+  height: 100%;
   padding: 16px;
   background: var(--panel-dark);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -184,6 +184,7 @@ main {
   grid-column: 2 / 4;
   min-width: 0;
   width: 100%;
+  height: 100%;
   padding: 14px;
   background:
     linear-gradient(180deg, rgba(255, 152, 48, 0.06), transparent 36%),
@@ -192,6 +193,12 @@ main {
 
 .telemetry-panel[open] {
   padding-bottom: 18px;
+}
+
+.telemetry-panel,
+.telemetry-panel[open] {
+  display: flex;
+  flex-direction: column;
 }
 
 .telemetry-panel__summary {
@@ -243,9 +250,12 @@ main {
 }
 
 .telemetry-panel__body {
+  flex: 1;
   margin-top: 14px;
   display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
   gap: 12px;
+  min-height: 0;
 }
 
 .telemetry-panel__eyebrow {
@@ -373,11 +383,16 @@ main {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  min-height: 0;
 }
 
 .card {
   min-width: 0;
+  height: 100%;
   padding: 12px;
+  display: flex;
+  flex-direction: column;
   background:
     linear-gradient(180deg, rgba(87, 148, 242, 0.06), transparent 28%),
     var(--panel-2);
@@ -391,6 +406,7 @@ main {
 dl {
   margin: 0;
   display: grid;
+  align-content: start;
   gap: 6px;
 }
 
