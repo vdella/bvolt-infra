@@ -1,29 +1,14 @@
 services:
-  bvolt-infra:
-    build:
-      context: .
-    container_name: bvolt-infra
-    restart: unless-stopped
-    ports:
-      - "8010:8010"
-    env_file:
-      - .env
-    environment:
-      BVOLT_CORE_BASE_URL: http://bvolt-core:8000
-      BVOLT_CORE_API_KEY: ${BVOLT_CORE_API_KEY:-}
-      BVOLT_CORE_SOURCE_LABEL: ${BVOLT_CORE_SOURCE_LABEL:-Internal bvolt-core service}
-      BVOLT_ALLOWED_ORIGINS: ${BVOLT_ALLOWED_ORIGINS:-*}
-      BVOLT_APP_HOST: 0.0.0.0
-      BVOLT_APP_PORT: 8010
-    networks:
-      - bvolt-shared
-
   grafana:
     image: grafana/grafana:latest
     container_name: bvolt-grafana
     restart: unless-stopped
     ports:
       - "3000:3000"
+    environment:
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
     volumes:
       - grafana-data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning

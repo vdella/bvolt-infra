@@ -11,6 +11,45 @@ const metrics = [
   ["battery_power", "Battery Power", "W"],
   ["battery_temperature", "Battery Temperature", "C"]
 ];
+const telemetryPanelStateKey = "bvolt-infra.telemetry-panel.open";
+
+function getMetricFamily(key) {
+  if (key.startsWith("battery_")) {
+    return "battery";
+  }
+  if (key.startsWith("grid_") || key.includes("grid")) {
+    return "grid";
+  }
+  if (key.startsWith("pv_") || key.includes("pv")) {
+    return "pv";
+  }
+  if (key.includes("load")) {
+    return "load";
+  }
+  return "default";
+}
+
+function initializeTelemetryPanelState() {
+  const panel = document.getElementById("telemetry-panel");
+  if (!panel) {
+    return;
+  }
+
+  try {
+    const savedState = window.localStorage.getItem(telemetryPanelStateKey);
+    if (savedState === "true") {
+      panel.open = true;
+    } else if (savedState === "false") {
+      panel.open = false;
+    }
+
+    panel.addEventListener("toggle", () => {
+      window.localStorage.setItem(telemetryPanelStateKey, String(panel.open));
+    });
+  } catch {
+    // Ignore storage access errors and fall back to default details behavior.
+  }
+}
 
 function formatValue(value, unit) {
   if (value === null || value === undefined || Number.isNaN(Number(value))) {
@@ -30,8 +69,10 @@ function renderCard(label, state) {
   }
 
   const rows = metrics.map(([key, title, unit]) => `
-    <dt>${title}</dt>
-    <dd>${formatValue(state[key], unit)}</dd>
+    <div class="metric-row metric-row--${getMetricFamily(key)}">
+      <dt>${title}</dt>
+      <dd>${formatValue(state[key], unit)}</dd>
+    </div>
   `).join("");
 
   return `
@@ -63,4 +104,5 @@ async function refresh() {
 }
 
 refresh();
+initializeTelemetryPanelState();
 setInterval(refresh, (window.BVOLT_INFRA?.refreshSeconds || 5) * 1000);

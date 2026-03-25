@@ -36,6 +36,8 @@ async def dashboard(request: Request):
         context={
             "core_source_label": config.core_source_label,
             "refresh_seconds": int(config.dashboard_refresh_seconds),
+            "grafana_dashboard_title": config.grafana_dashboard_title,
+            "grafana_embed_url": config.grafana_embed_url,
         },
     )
 

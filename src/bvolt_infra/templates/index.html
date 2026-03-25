@@ -8,14 +8,54 @@
   </head>
   <body>
     <main>
-      <section class="hero">
-        <h1>bvolt-infra</h1>
-        <p>Read-only dashboard backed by bvolt-core API.</p>
-        <p><strong>Source:</strong> {{ core_source_label }}</p>
-        <p><strong>Refresh:</strong> {{ refresh_seconds }}s</p>
+      <section class="page-header">
+        <div class="hero">
+          <p class="eyebrow hero__eyebrow">Operations console</p>
+          <h1>bvolt-infra</h1>
+          <p>Read-only dashboard backed by bvolt-core API.</p>
+        </div>
+        <dl class="hero-meta">
+          <div>
+            <dt>Source</dt>
+            <dd>{{ core_source_label }}</dd>
+          </div>
+          <div>
+            <dt>Refresh</dt>
+            <dd>{{ refresh_seconds }}s</dd>
+          </div>
+        </dl>
       </section>
-      <section id="status" class="status">Loading...</section>
-      <section id="cards" class="grid"></section>
+      {% if grafana_embed_url %}
+      <section class="grafana-panel">
+        <div class="grafana-panel__header">
+          <div>
+            <p class="eyebrow">Embedded monitoring</p>
+            <h2>{{ grafana_dashboard_title }}</h2>
+          </div>
+          <a href="{{ grafana_embed_url }}" target="_blank" rel="noreferrer">Open in Grafana</a>
+        </div>
+        <iframe
+          class="grafana-frame"
+          src="{{ grafana_embed_url }}"
+          title="{{ grafana_dashboard_title }}"
+          loading="lazy"
+          referrerpolicy="strict-origin-when-cross-origin"
+        ></iframe>
+      </section>
+      {% endif %}
+      <details id="telemetry-panel" class="telemetry-panel">
+        <summary class="telemetry-panel__summary">
+          <div>
+            <p class="eyebrow telemetry-panel__eyebrow">Live snapshot</p>
+            <h2>Current inverter metrics</h2>
+          </div>
+          <span class="telemetry-panel__toggle">Show details</span>
+        </summary>
+        <div class="telemetry-panel__body">
+          <section id="status" class="status">Loading...</section>
+          <section id="cards" class="grid"></section>
+        </div>
+      </details>
     </main>
     <script>
       window.BVOLT_INFRA = {
