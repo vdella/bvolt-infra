@@ -44,7 +44,7 @@ grafana/data/
 grafana/plugins/
 
 # Auto-generated dashboards (export explicitly instead)
-grafana/dashboards/*.json
+# grafana/dashboards/*.json
 !grafana/dashboards/*.template.json
 
 ############################################
@@ -73,3 +73,5 @@ Thumbs.db
 *.bak
 *.backup
 *.old
+
+.idea

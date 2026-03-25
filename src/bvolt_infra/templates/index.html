@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bvolt</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <main>
+      <section class="dashboard-layout">
+        {% if grafana_embed_url %}
+        <section class="grafana-panel">
+          <div class="grafana-panel__header">
+            <div>
+              <p class="eyebrow">Embedded monitoring</p>
+              <h2>{{ grafana_dashboard_title }}</h2>
+            </div>
+            <a href="{{ grafana_embed_url }}" target="_blank" rel="noreferrer">Open in Grafana</a>
+          </div>
+          <iframe
+            class="grafana-frame"
+            src="{{ grafana_embed_url }}"
+            title="{{ grafana_dashboard_title }}"
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+          ></iframe>
+        </section>
+        {% endif %}
+        <details id="telemetry-panel" class="telemetry-panel" open>
+          <summary class="telemetry-panel__summary">
+            <div>
+              <p class="eyebrow telemetry-panel__eyebrow">Live snapshot</p>
+              <h2>Current inverter metrics</h2>
+            </div>
+            <span class="telemetry-panel__toggle">Show details</span>
+          </summary>
+          <div class="telemetry-panel__body">
+            <section id="status" class="status">Loading...</section>
+            <section id="summary" class="summary-grid"></section>
+            <section id="cards" class="grid"></section>
+          </div>
+        </details>
+      </section>
+    </main>
+    <script>
+      window.BVOLT_INFRA = {
+        refreshSeconds: {{ refresh_seconds }},
+      };
+    </script>
+    <script src="/static/app.js"></script>
+  </body>
+  </html>

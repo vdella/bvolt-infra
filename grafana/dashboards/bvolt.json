@@ -1,0 +1,729 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 0,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfh2uirlztzi8e"
+      },
+      "description": "Node Graph replacement for the previous Canvas schematic",
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 11,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "edges": {},
+        "layoutAlgorithm": "layered",
+        "legend": true,
+        "nodes": {
+          "mainStatUnit": "",
+          "secondaryStatUnit": ""
+        },
+        "zoomMode": "cooperative"
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfh2uirlztzi8e"
+          },
+          "query": "import \"array\"\n\npv = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"pv_power\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\" or r[\"asset_id\"] == \"inverter_2\")\n  |> last()\n  |> group()\n  |> sum(column: \"_value\")\n  |> findRecord(fn: (key) => true, idx: 0)\n\nsoc = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_soc\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\" or r[\"asset_id\"] == \"inverter_2\")\n  |> last()\n  |> group()\n  |> mean(column: \"_value\")\n  |> findRecord(fn: (key) => true, idx: 0)\n\nload = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"total_load_power\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\" or r[\"asset_id\"] == \"inverter_2\")\n  |> last()\n  |> group()\n  |> sum(column: \"_value\")\n  |> findRecord(fn: (key) => true, idx: 0)\n\ngrid = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"total_grid_power\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\" or r[\"asset_id\"] == \"inverter_2\")\n  |> last()\n  |> group()\n  |> sum(column: \"_value\")\n  |> findRecord(fn: (key) => true, idx: 0)\n\narray.from(rows: [\n  {id: \"pv\", title: \"PV power\", subtitle: \"Inverter 1 + 2\", mainstat: float(v: pv._value), secondarystat: \"W\", color: \"#EAB839\", nodeRadius: 45.0},\n  {id: \"ems\", title: \"EMS state\", subtitle: \"Controller\", mainstat: 0.0, secondarystat: \"active\", color: \"#73BF69\", nodeRadius: 30.0},\n  {id: \"battery\", title: \"Battery SoC\", subtitle: \"Average state\", mainstat: float(v: soc._value), secondarystat: \"%\", color: \"#5794F2\", nodeRadius: 45.0},\n  {id: \"grid\", title: \"Total grid power\", subtitle: \"Inverter 1 + 2\", mainstat: float(v: grid._value), secondarystat: \"W\", color: \"#FF9830\", nodeRadius: 45.0},\n  {id: \"load\", title: \"Total load power\", subtitle: \"Inverter 1 + 2\", mainstat: float(v: load._value), secondarystat: \"W\", color: \"#F2495C\", nodeRadius: 45.0}\n])",
+          "refId": "nodes"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfh2uirlztzi8e"
+          },
+          "query": "import \"array\"\n\npv = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"pv_power\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\" or r[\"asset_id\"] == \"inverter_2\")\n  |> last()\n  |> group()\n  |> sum(column: \"_value\")\n  |> findRecord(fn: (key) => true, idx: 0)\n\nsoc = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_soc\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\" or r[\"asset_id\"] == \"inverter_2\")\n  |> last()\n  |> group()\n  |> mean(column: \"_value\")\n  |> findRecord(fn: (key) => true, idx: 0)\n\nload = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"total_load_power\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\" or r[\"asset_id\"] == \"inverter_2\")\n  |> last()\n  |> group()\n  |> sum(column: \"_value\")\n  |> findRecord(fn: (key) => true, idx: 0)\n\ngrid = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"total_grid_power\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\" or r[\"asset_id\"] == \"inverter_2\")\n  |> last()\n  |> group()\n  |> sum(column: \"_value\")\n  |> findRecord(fn: (key) => true, idx: 0)\n\narray.from(rows: [\n  {id: \"pv-ems\", source: \"pv\", target: \"ems\", mainstat: float(v: pv._value), secondarystat: \"PV to EMS\", thickness: 3.0, color: \"#EAB839\"},\n  {id: \"ems-battery\", source: \"ems\", target: \"battery\", mainstat: float(v: soc._value), secondarystat: \"Battery SoC\", thickness: 2.0, color: \"#5794F2\"},\n  {id: \"ems-grid\", source: \"ems\", target: \"grid\", mainstat: float(v: grid._value), secondarystat: \"Grid exchange\", thickness: 2.0, color: \"#FF9830\"},\n  {id: \"ems-load\", source: \"ems\", target: \"load\", mainstat: float(v: load._value), secondarystat: \"Load supply\", thickness: 2.0, color: \"#F2495C\"}\n])",
+          "refId": "edges"
+        }
+      ],
+      "title": "Inverter 1+2 EMS topology",
+      "type": "nodeGraph"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfh2uirlztzi8e"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "axisSoftMax": 100,
+            "axisSoftMin": 90,
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 9,
+        "w": 13,
+        "x": 11,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfh2uirlztzi8e"
+          },
+          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_soc\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\" or r[\"asset_id\"] == \"inverter_2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "battery_soc"
+        }
+      ],
+      "title": "Battery State of Charge (SoC)",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfh2uirlztzi8e"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 7,
+        "x": 0,
+        "y": 9
+      },
+      "id": 11,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid_voltage_l1\" or r[\"_field\"] == \"grid_voltage_l2\" or r[\"_field\"] == \"grid_voltage_l3\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_2\" or r[\"asset_id\"] == \"inverter_1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "New panel",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "efgzxzei93i80a"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "volt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 7,
+        "y": 9
+      },
+      "id": 6,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "efgzxzei93i80a"
+          },
+          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_voltage\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\" or r[\"asset_id\"] == \"inverter_2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "5-cell Battery Voltage"
+        }
+      ],
+      "title": "Battery voltage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "efgzxzei93i80a"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "amp"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 11,
+        "x": 13,
+        "y": 9
+      },
+      "id": 7,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "efgzxzei93i80a"
+          },
+          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_current\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\" or r[\"asset_id\"] == \"inverter_2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "Battery current"
+        }
+      ],
+      "title": "Battery current",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "efgzxzei93i80a"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "celsius"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 7,
+        "x": 0,
+        "y": 15
+      },
+      "id": 8,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "efgzxzei93i80a"
+          },
+          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_temperature\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "Inverter1 battery temperature"
+        }
+      ],
+      "title": "Battery temperature",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "efgzxzei93i80a"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 7,
+        "y": 15
+      },
+      "id": 10,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "efgzxzei93i80a"
+          },
+          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"inverter_state\")\n  |> filter(fn: (r) => r._field == \"total_grid_power\")\n  |> filter(fn: (r) => r.asset_id == \"inverter_1\" or r.asset_id == \"inverter_2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> pivot(\n      rowKey: [\"_time\"],\n      columnKey: [\"asset_id\"],\n      valueColumn: \"_value\"\n    )\n  |> map(fn: (r) => ({\n      _time: r._time,\n      _value: (if exists r.inverter_1 then r.inverter_1 else 0.0) +\n              (if exists r.inverter_2 then r.inverter_2 else 0.0)\n    }))\n  |> yield(name: \"total_grid_sum\")",
+          "refId": "Reduced total grid power"
+        }
+      ],
+      "title": "Inverter 1+2 grid power balance",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "efgzxzei93i80a"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "watt"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 9,
+        "x": 15,
+        "y": 15
+      },
+      "id": 9,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "efgzxzei93i80a"
+          },
+          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"inverter_state\")\n  |> filter(fn: (r) => r._field == \"total_load_power\")\n  |> filter(fn: (r) => r.asset_id == \"inverter_1\" or r.asset_id == \"inverter_2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> pivot(\n      rowKey: [\"_time\"],\n      columnKey: [\"asset_id\"],\n      valueColumn: \"_value\"\n    )\n  |> map(fn: (r) => ({\n      _time: r._time,\n      _value: (if exists r.inverter_1 then r.inverter_1 else 0.0) +\n              (if exists r.inverter_2 then r.inverter_2 else 0.0)\n    }))\n  |> yield(name: \"total_grid_sum\")",
+          "refId": "Reduced total load power"
+        }
+      ],
+      "title": "Inverter 1+2 total load power",
+      "type": "timeseries"
+    }
+  ],
+  "preload": false,
+  "refresh": "5s",
+  "schemaVersion": 42,
+  "tags": [],
+  "templating": {
+    "list": []
+  },
+  "time": {
+    "from": "now-3h",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "bvolt",
+  "uid": "adxmk4pdbvolt",
+  "version": 13
+}

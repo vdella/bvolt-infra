@@ -1,39 +1,25 @@
-version: "3.8"
-
 services:
-  influxdb:
-    image: influxdb:2.7
-    container_name: bvolt-influxdb
-    restart: unless-stopped
-    ports:
-      - "8086:8086"
-    env_file:
-      - .env
-    volumes:
-      - influxdb-data:/var/lib/influxdb2
-      - ./influxdb/init:/docker-entrypoint-initdb.d
-    networks:
-      - bvolt-net
-
   grafana:
     image: grafana/grafana:latest
     container_name: bvolt-grafana
     restart: unless-stopped
     ports:
       - "3000:3000"
+    environment:
+      GF_SECURITY_ALLOW_EMBEDDING: "true"
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
     volumes:
       - grafana-data:/var/lib/grafana
       - ./grafana/provisioning:/etc/grafana/provisioning
       - ./grafana/dashboards:/var/lib/grafana/dashboards
-    depends_on:
-      - influxdb
     networks:
-      - bvolt-net
+      - bvolt-shared
 
 volumes:
-  influxdb-data:
   grafana-data:
 
 networks:
-  bvolt-net:
-    driver: bridge
+  bvolt-shared:
+    external: true
+    name: bvolt-shared
