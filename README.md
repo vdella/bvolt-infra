@@ -58,9 +58,9 @@ This starts only the Grafana container. `bvolt-infra` itself should be run with 
 - `BVOLT_APP_HOST` default: `0.0.0.0`
 - `BVOLT_APP_PORT` default: `8010`
 - `GRAFANA_BASE_URL` default: `http://localhost:3000`
-- `GRAFANA_DASHBOARD_UID` default: `adxmk4pd`
-- `GRAFANA_DASHBOARD_SLUG` default: `microgrid-integration-node`
-- `GRAFANA_DASHBOARD_TITLE` default: `Grafana dashboard`
+- `GRAFANA_DASHBOARD_UID` default: `adxmk4pdbvolt`
+- `GRAFANA_DASHBOARD_SLUG` default: `bvolt`
+- `GRAFANA_DASHBOARD_TITLE` default: `bvolt`
 - `GRAFANA_ORG_ID` default: `1`
 - `GRAFANA_KIOSK_MODE` default: `true`
 - `GRAFANA_EMBED_URL` default: auto-built from the settings above

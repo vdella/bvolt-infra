@@ -32,8 +32,12 @@ body {
 }
 
 main {
-  width: min(1100px, calc(100% - 32px));
+  width: min(1600px, calc(100% - 40px));
   margin: 24px auto;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
 }
 
 .hero, .page-header, .telemetry-panel, .status, .card {
@@ -51,6 +55,7 @@ main {
   padding: 20px;
   position: relative;
   overflow: hidden;
+  grid-column: 1 / -1;
 }
 
 .page-header::after {
@@ -118,8 +123,28 @@ main {
   border-color: rgba(115, 191, 105, 0.28);
 }
 
-.grafana-panel {
+.dashboard-layout {
+  grid-column: 1 / -1;
   margin-top: 16px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.95fr);
+  align-items: start;
+}
+
+main > .grafana-panel {
+  grid-column: 1;
+  margin-top: 16px;
+}
+
+main > .telemetry-panel {
+  grid-column: 2;
+  margin-top: 16px;
+}
+
+.grafana-panel {
+  min-width: 0;
+  width: 100%;
   padding: 16px;
   background: var(--panel-dark);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -158,14 +183,15 @@ main {
 .grafana-frame {
   display: block;
   width: 100%;
-  min-height: 720px;
+  min-height: 920px;
   border: 0;
   border-radius: 18px;
   background: #0b1220;
 }
 
 .telemetry-panel {
-  margin-top: 16px;
+  min-width: 0;
+  width: 100%;
   padding: 16px;
   background:
     linear-gradient(180deg, rgba(255, 152, 48, 0.06), transparent 36%),
@@ -315,7 +341,18 @@ dd {
   color: var(--red);
 }
 
-@media (max-width: 720px) {
+@media (max-width: 900px) {
+  main > .grafana-panel,
+  main > .telemetry-panel {
+    grid-column: 1;
+  }
+
+  .dashboard-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
   .telemetry-panel__summary,
   .grafana-panel__header {
     flex-direction: column;
