@@ -104,9 +104,9 @@ function buildSummary(payload) {
   const gridDirection = totalGridPower === null
     ? { label: "Grid state unavailable", family: "default", value: "-" }
     : totalGridPower < -50
-      ? { label: "Grid importing", family: "grid", value: formatValue(Math.abs(totalGridPower), "W") }
+      ? { label: "Grid exporting", family: "grid", value: formatValue(Math.abs(totalGridPower), "W") }
       : totalGridPower > 50
-        ? { label: "Grid exporting", family: "pv", value: formatValue(totalGridPower, "W") }
+        ? { label: "Grid importing", family: "pv", value: formatValue(totalGridPower, "W") }
         : { label: "Grid balanced", family: "default", value: formatValue(totalGridPower, "W") };
 
   const metricCards = Object.entries(aggregateValues).map(([key, data]) => `
