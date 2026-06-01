@@ -833,7 +833,7 @@
             "type": "influxdb",
             "uid": "dfh2uirlztzi8e"
           },
-          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_soc\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\" or r[\"asset_id\"] == \"inverter_2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"real_soc\")",
+          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_soc\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"real_soc\")",
           "refId": "real_soc"
         },
         {
@@ -841,7 +841,7 @@
             "type": "influxdb",
             "uid": "dfh2uirlztzi8e"
           },
-          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"tft_prediction\")\n  |> filter(fn: (r) => r[\"_field\"] == \"predicted_soc\")\n  |> filter(fn: (r) => r[\"group_id\"] == \"inverter_1\" or r[\"group_id\"] == \"inverter_2\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"predicted_soc\")",
+          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"tft_prediction\")\n  |> filter(fn: (r) => r[\"_field\"] == \"predicted_soc\")\n  |> filter(fn: (r) => r[\"group_id\"] == \"inverter_1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"predicted_soc\")",
           "refId": "predicted_soc"
         }
       ],
@@ -1178,5 +1178,5 @@
   "timezone": "browser",
   "title": "bvolt",
   "uid": "adxmk4pdbvolt",
-  "version": 20
+  "version": 21
 }
