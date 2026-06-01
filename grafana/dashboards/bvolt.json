@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 0,
+  "id": 11,
   "links": [],
   "panels": [
     {
@@ -718,6 +718,7 @@
         "y": 23
       },
       "id": 20,
+      "panels": [],
       "title": "Prediction",
       "type": "row"
     },
@@ -739,7 +740,7 @@
             "axisLabel": "",
             "axisPlacement": "auto",
             "axisSoftMax": 100,
-            "axisSoftMin": 0,
+            "axisSoftMin": 70,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
@@ -774,7 +775,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -790,7 +791,10 @@
               {
                 "id": "custom.lineStyle",
                 "value": {
-                  "dash": [8, 4],
+                  "dash": [
+                    8,
+                    4
+                  ],
                   "fill": "dash"
                 }
               },
@@ -895,7 +899,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               }
             ]
           },
@@ -912,7 +916,11 @@
       "id": 22,
       "options": {
         "legend": {
-          "calcs": ["mean", "max", "min"],
+          "calcs": [
+            "mean",
+            "max",
+            "min"
+          ],
           "displayMode": "table",
           "placement": "bottom",
           "showLegend": true
@@ -964,7 +972,7 @@
             "steps": [
               {
                 "color": "red",
-                "value": null
+                "value": 0
               },
               {
                 "color": "orange",
@@ -1035,7 +1043,7 @@
             "steps": [
               {
                 "color": "green",
-                "value": null
+                "value": 0
               },
               {
                 "color": "yellow",
@@ -1105,5 +1113,5 @@
   "timezone": "browser",
   "title": "bvolt",
   "uid": "adxmk4pdbvolt",
-  "version": 14
+  "version": 18
 }
