@@ -26,71 +26,6 @@
         "type": "influxdb",
         "uid": "dfh2uirlztzi8e"
       },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 0
-      },
-      "id": 25,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "percentChangeColorMode": "standard",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showPercentChange": false,
-        "textMode": "auto",
-        "wideLayout": true
-      },
-      "pluginVersion": "12.3.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "influxdb",
-            "uid": "dfh2uirlztzi8e"
-          },
-          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_soc\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
-          "refId": "A"
-        }
-      ],
-      "title": "New panel",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "influxdb",
-        "uid": "dfh2uirlztzi8e"
-      },
       "description": "Node Graph replacement for the previous Canvas schematic",
       "fieldConfig": {
         "defaults": {},
@@ -287,11 +222,11 @@
       "pluginVersion": "12.3.1",
       "targets": [
         {
-          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid_voltage_l1\" or r[\"_field\"] == \"grid_voltage_l2\" or r[\"_field\"] == \"grid_voltage_l3\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_2\" or r[\"asset_id\"] == \"inverter_1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"grid_voltage_l1\" or r[\"_field\"] == \"grid_voltage_l2\" or r[\"_field\"] == \"grid_voltage_l3\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
           "refId": "A"
         }
       ],
-      "title": "New panel",
+      "title": "Inverter phases",
       "type": "stat"
     },
     {
@@ -1023,6 +958,71 @@
         "type": "influxdb",
         "uid": "dfh2uirlztzi8e"
       },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 4,
+        "x": 10,
+        "y": 33
+      },
+      "id": 25,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfh2uirlztzi8e"
+          },
+          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_soc\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "Inverter 1 Actual SOC",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfh2uirlztzi8e"
+      },
       "description": "Latest predicted SoC written by the TFT predictor. One value per inverter group.",
       "fieldConfig": {
         "defaults": {
@@ -1178,5 +1178,5 @@
   "timezone": "browser",
   "title": "bvolt",
   "uid": "adxmk4pdbvolt",
-  "version": 19
+  "version": 20
 }
