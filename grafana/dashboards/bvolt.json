@@ -26,6 +26,71 @@
         "type": "influxdb",
         "uid": "dfh2uirlztzi8e"
       },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 25,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.3.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfh2uirlztzi8e"
+          },
+          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_soc\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "title": "New panel",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "influxdb",
+        "uid": "dfh2uirlztzi8e"
+      },
       "description": "Node Graph replacement for the previous Canvas schematic",
       "fieldConfig": {
         "defaults": {},
@@ -909,7 +974,7 @@
       },
       "gridPos": {
         "h": 8,
-        "w": 14,
+        "w": 10,
         "x": 0,
         "y": 33
       },
@@ -1113,5 +1178,5 @@
   "timezone": "browser",
   "title": "bvolt",
   "uid": "adxmk4pdbvolt",
-  "version": 18
+  "version": 19
 }
