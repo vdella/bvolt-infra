@@ -727,7 +727,7 @@
         "type": "influxdb",
         "uid": "dfh2uirlztzi8e"
       },
-      "description": "Measured battery SoC (solid lines) alongside the TFT model forecast (dashed lines). Both inverters on the same axis.",
+      "description": "Real battery SoC vs the TFT model. 'predicted_nowcast' is the model's step-1 estimate at each cycle (historical accuracy); 'forecast_curve' is the latest full horizon extending into the future. Set the dashboard time range to e.g. now-1h .. now+1h to see the forward forecast.",
       "fieldConfig": {
         "defaults": {
           "color": {
@@ -841,8 +841,16 @@
             "type": "influxdb",
             "uid": "dfh2uirlztzi8e"
           },
-          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"tft_prediction\")\n  |> filter(fn: (r) => r[\"_field\"] == \"predicted_soc\")\n  |> filter(fn: (r) => r[\"group_id\"] == \"inverter_1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"predicted_soc\")",
-          "refId": "predicted_soc"
+          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"tft_prediction\")\n  |> filter(fn: (r) => r[\"_field\"] == \"predicted_soc\")\n  |> filter(fn: (r) => r[\"group_id\"] == \"inverter_1\")\n  |> filter(fn: (r) => r[\"horizon_step\"] == \"1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"predicted_nowcast\")",
+          "refId": "predicted_nowcast"
+        },
+        {
+          "datasource": {
+            "type": "influxdb",
+            "uid": "dfh2uirlztzi8e"
+          },
+          "query": "from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"tft_prediction\")\n  |> filter(fn: (r) => r[\"_field\"] == \"predicted_soc\")\n  |> filter(fn: (r) => r[\"group_id\"] == \"inverter_1\")\n  |> group(columns: [\"_time\"])\n  |> last()\n  |> group()\n  |> sort(columns: [\"_time\"])\n  |> yield(name: \"forecast_curve\")",
+          "refId": "forecast_curve"
         }
       ],
       "title": "SoC: Real vs Predicted",
@@ -938,7 +946,7 @@
             "type": "influxdb",
             "uid": "dfh2uirlztzi8e"
           },
-          "query": "real = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_soc\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\"])\n  |> rename(columns: {_value: \"real_soc\"})\n\npred = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"tft_prediction\")\n  |> filter(fn: (r) => r[\"_field\"] == \"predicted_soc\")\n  |> filter(fn: (r) => r[\"group_id\"] == \"inverter_1\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\"])\n  |> rename(columns: {_value: \"pred_soc\"})\n\njoin(tables: {real: real, pred: pred}, on: [\"_time\"])\n  |> map(fn: (r) => ({_time: r._time, _value: r.pred_soc - r.real_soc}))\n  |> yield(name: \"delta_inv1\")",
+          "query": "real = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_soc\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_1\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\"])\n  |> rename(columns: {_value: \"real_soc\"})\n\npred = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"tft_prediction\")\n  |> filter(fn: (r) => r[\"_field\"] == \"predicted_soc\")\n  |> filter(fn: (r) => r[\"horizon_step\"] == \"1\")\n  |> filter(fn: (r) => r[\"group_id\"] == \"inverter_1\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\"])\n  |> rename(columns: {_value: \"pred_soc\"})\n\njoin(tables: {real: real, pred: pred}, on: [\"_time\"])\n  |> map(fn: (r) => ({_time: r._time, _value: r.pred_soc - r.real_soc}))\n  |> yield(name: \"delta_inv1\")",
           "refId": "delta_inv1"
         },
         {
@@ -946,7 +954,7 @@
             "type": "influxdb",
             "uid": "dfh2uirlztzi8e"
           },
-          "query": "real = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_soc\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_2\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\"])\n  |> rename(columns: {_value: \"real_soc\"})\n\npred = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"tft_prediction\")\n  |> filter(fn: (r) => r[\"_field\"] == \"predicted_soc\")\n  |> filter(fn: (r) => r[\"group_id\"] == \"inverter_2\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\"])\n  |> rename(columns: {_value: \"pred_soc\"})\n\njoin(tables: {real: real, pred: pred}, on: [\"_time\"])\n  |> map(fn: (r) => ({_time: r._time, _value: r.pred_soc - r.real_soc}))\n  |> yield(name: \"delta_inv2\")",
+          "query": "real = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"inverter_state\")\n  |> filter(fn: (r) => r[\"_field\"] == \"battery_soc\")\n  |> filter(fn: (r) => r[\"asset_id\"] == \"inverter_2\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\"])\n  |> rename(columns: {_value: \"real_soc\"})\n\npred = from(bucket: \"core\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"tft_prediction\")\n  |> filter(fn: (r) => r[\"_field\"] == \"predicted_soc\")\n  |> filter(fn: (r) => r[\"horizon_step\"] == \"1\")\n  |> filter(fn: (r) => r[\"group_id\"] == \"inverter_2\")\n  |> aggregateWindow(every: 5m, fn: mean, createEmpty: false)\n  |> keep(columns: [\"_time\", \"_value\"])\n  |> rename(columns: {_value: \"pred_soc\"})\n\njoin(tables: {real: real, pred: pred}, on: [\"_time\"])\n  |> map(fn: (r) => ({_time: r._time, _value: r.pred_soc - r.real_soc}))\n  |> yield(name: \"delta_inv2\")",
           "refId": "delta_inv2"
         }
       ],
@@ -1084,7 +1092,7 @@
             "type": "influxdb",
             "uid": "dfh2uirlztzi8e"
           },
-          "query": "from(bucket: \"core\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"tft_prediction\")\n  |> filter(fn: (r) => r[\"_field\"] == \"predicted_soc\")\n  |> last()",
+          "query": "from(bucket: \"core\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"tft_prediction\")\n  |> filter(fn: (r) => r[\"_field\"] == \"predicted_soc\")\n  |> filter(fn: (r) => r[\"horizon_step\"] == \"1\")\n  |> last()",
           "refId": "latest_predicted_soc"
         }
       ],
@@ -1155,7 +1163,7 @@
             "type": "influxdb",
             "uid": "dfh2uirlztzi8e"
           },
-          "query": "from(bucket: \"core\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"tft_prediction\")\n  |> filter(fn: (r) => r[\"_field\"] == \"predicted_soc\")\n  |> last()\n  |> map(fn: (r) => ({_time: r._time, _value: float(v: uint(v: now()) - uint(v: r._time)) / 1000000000.0}))\n  |> yield(name: \"age_seconds\")",
+          "query": "from(bucket: \"core\")\n  |> range(start: -24h)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"tft_prediction\")\n  |> filter(fn: (r) => r[\"_field\"] == \"predicted_soc\")\n  |> filter(fn: (r) => r[\"horizon_step\"] == \"1\")\n  |> last()\n  |> map(fn: (r) => ({_time: r._time, _value: float(v: uint(v: now()) - uint(v: r._time)) / 1000000000.0}))\n  |> yield(name: \"age_seconds\")",
           "refId": "prediction_age"
         }
       ],
